@@ -1,8 +1,8 @@
-#The Final Word
+# The Final Word
 
 Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
 
-##Functionality includes
+## Functionality includes
 
 * Marking a chosen comment as the 'top comment'
 * The top comment is displayed at the top of the comment list with a 'view in context' link
@@ -10,7 +10,7 @@ Have the final word in a comment thread by marking a chosen comment as the 'top 
 * Only one comment can be selected as the top comment
 * The top comment flag can be removed
 
-##Future functionality
+## Future functionality
 
 * Option to hide all other comments when selecting a top commemt
 * Option to close post coomments when selecting a top comment
@@ -18,6 +18,6 @@ Have the final word in a comment thread by marking a chosen comment as the 'top 
 * Display top comment on post edit screen
 * Add/remove top comments from wp-admin
 
-##Notes
+## Notes
 
 * This plugin is built for and requires [O2](https://github.com/Automattic/o2) to be installed.
