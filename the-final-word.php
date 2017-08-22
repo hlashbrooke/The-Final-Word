@@ -2,11 +2,11 @@
 /*
  * Plugin Name: The Final Word
  * Version: 1.0
- * Plugin URI: https://hugh.blog/
+ * Plugin URI: https://github.com/hlashbrooke/The-Final-Word
  * Description: Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
  * Author: Hugh Lashbrooke
  * Author URI: https://hugh.blog/
- * Requires at least: 4.7
+ * Requires at least: 4.8
  * Tested up to: 4.8.1
  *
  * Text Domain: the-final-word
