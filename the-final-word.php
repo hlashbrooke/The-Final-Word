@@ -19,29 +19,50 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/**
+ * Load plugin JS and CSS
+ * @return void
+ */
 function tfw_enqueue_scripts () {
 
+	//  Set version number for JS and CSS
 	$ver = '1.0';
 
+	// Load plugin JS and localise
 	wp_enqueue_script( 'tfw-scripts', plugins_url( 'assets/scripts.js', __FILE__ ), array( 'jquery' ), $ver, false );
 	wp_localize_script( 'tfw-scripts', 'tfw', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
+	// Load  plugin CSS
 	wp_enqueue_style( 'tfw-css', plugins_url( 'assets/style.css', __FILE__ ), false, $ver, 'all' );
 }
 add_action( 'wp_enqueue_scripts', 'tfw_enqueue_scripts' );
 
+/**
+ * Add 'Top comment' actions to the comment action dropdown
+ * @param  array   $actions       The existing list of comment actions
+ * @param  string  $location      The location of the actions list
+ * @param  object  $comment       The WP_Comment object for the current comment
+ * @param  integer $comment_depth The depth of the comment in the thread
+ * @return array                  The updated list of comment actions
+ */
 function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 
+	// Get the post ID for the current comment
 	$post_id = $comment->comment_post_ID;
 	if( ! $post_id ) {
 		return $actions;
 	}
 
-	if ( 'dropdown' === $location ) {
+	// Only add the top comment actions if this is the approved post dropdown
+	if ( 'dropdown' == $location ) {
+
+		//  Make sure we're dealing with an array here
 		$actions = (array) $actions;
 
+		// Check if this comment is already marked as the top comment
 		$top_comment = get_comment_meta( $comment->comment_ID, 'top_comment', true );
 
+		// Display top comment add/remove actions depending on context
 		if( $top_comment && 'top' == $top_comment ) {
 			$actions[] = "<a class='o2-comment-top-remove o2-actions-border-top o2-warning-hover genericon genericon-close' data-comment_id='" . $comment->comment_ID . "'' href='#'>" . esc_html__( 'Top comment', 'the-final-word' ) . "</a>";
 		} else {
@@ -49,26 +70,38 @@ function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 		}
 	}
 
+	// Return updated actions
 	return $actions;
 }
 add_filter( 'o2_comment_actions', 'tfw_comment_actions', 11, 4 );
 
+/**
+ * Mark a comment as the top comment for the post - triggered via ajax
+ * @return void
+ */
 function tfw_mark_top_comment () {
+
+	// Check if a comment ID has been passed through the request
 	if( ! isset( $_POST['comment_id'] ) || ! $_POST['comment_id'] ) {
 		exit;
 	}
 
+	//  Set default return value
 	$return = 0;
 
+	// Make sure we have a valid integer here
 	$comment_id = intval( $_POST['comment_id'] );
 
+	// If ID is non-zero, then proceed
 	if( $comment_id ) {
 
 		// Get comment object
 		$comment = get_comment( $comment_id );
+
+		// Get post ID for comment
 		$post_id = $comment->comment_post_ID;
 
-		// Remove existing top comment(s)
+		// Remove existing top comment(s) before adding a new one - posts should only have one top comment
 		$post_comments = get_comments( array( 'fields' => 'ids', 'post_id' => $post_id, 'meta_key' => 'top_comment' ) );
 		if( 0 < count( $post_comments ) ) {
 			foreach( $post_comments as $post_comment ) {
@@ -80,42 +113,67 @@ function tfw_mark_top_comment () {
 		update_comment_meta( $comment_id, 'top_comment', 'top' );
 		update_post_meta( $post_id, 'post_top_comment', $comment_id );
 
+		// Set comment ID as return value
 		$return = $comment_id;
 	}
 
+	// Echo return value as this is an ajax request
 	echo $return;
 
 	exit;
 }
 add_action( 'wp_ajax_top-comment', 'tfw_mark_top_comment' );
 
+/**
+ * Remove a comment from being the top comment for a post - triggered via ajax
+ * @return void
+ */
 function tfw_remove_top_comment () {
 
+	// Check if a comment ID has been passed through the request
 	if( ! isset( $_POST['comment_id'] ) || ! $_POST['comment_id'] ) {
 		exit;
 	}
 
+	//  Set default return value
 	$return = 0;
 
+	// Make sure we have a valid integer here
 	$comment_id = intval( $_POST['comment_id'] );
 
+	// If ID is non-zero, then proceed
 	if( $comment_id ) {
 
+		// Get comment object
 		$comment = get_comment( $comment_id );
+
+		// Get post ID for comment
 		$post_id = $comment->comment_post_ID;
 
+		// Delete meta for top comment and post
 		delete_comment_meta( $comment_id, 'top_comment' );
 		delete_post_meta( $post_id, 'post_top_comment' );
 
+		// Set comment ID as return value
 		$return = $comment_id;
 	}
 
+	// Echo return value as this is an ajax request
 	echo $return;
 
 	exit;
 }
 add_action( 'wp_ajax_top-comment-remove', 'tfw_remove_top_comment' );
 
+/**
+ * Add the 'top-comment' class to the comment display on the front-end
+ * @param  array   $classes    The existing list of comment classes
+ * @param  string  $class      The current class
+ * @param  integer $comment_id The ID of the current comment
+ * @param  object  $comment    The WP_Comment object for the current comment
+ * @param  integer $post_id    The ID of the current post
+ * @return array               The updated list of comment classes
+ */
 function tfw_comment_class ( $classes, $class, $comment_id, $comment, $post_id ) {
 	$top_comment = get_comment_meta( $comment_id, 'top_comment', true );
 
@@ -127,6 +185,12 @@ function tfw_comment_class ( $classes, $class, $comment_id, $comment, $post_id )
 }
 add_filter( 'comment_class', 'tfw_comment_class', 10, 5 );
 
+/**
+ * Modify the O2 post fragment
+ * @param  array   $fragment The fragment data for the current post
+ * @param  integer $post_id  The ID of the current post
+ * @return array             The updated fragment data for the current post
+ */
 function tfw_o2_post_fragment ( $fragment, $post_id ) {
 
 	$post_top_comment = intval( get_post_meta( $post_id, 'post_top_comment', true ) );
@@ -143,6 +207,12 @@ function tfw_o2_post_fragment ( $fragment, $post_id ) {
 }
 add_filter( 'o2_post_fragment', 'tfw_o2_post_fragment', 100, 2 );
 
+/**
+ * Modify the O2 comment fragment
+ * @param  array   $fragment    The fragment data for the current comment
+ * @param  integer $comment_id  The ID of the current comment
+ * @return array                The updated fragment data for the current comment
+ */
 function tfw_o2_comment_fragment( $fragment, $comment_id ) {
 
 	if( 'display-top' == $comment_id ) {
