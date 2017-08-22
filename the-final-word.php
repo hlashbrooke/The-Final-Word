@@ -28,8 +28,11 @@ function tfw_enqueue_scripts () {
 	//  Set version number for JS and CSS
 	$ver = '1.0';
 
+	// Set minified suffix as necessary
+	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 	// Load plugin JS and localise
-	wp_enqueue_script( 'tfw-scripts', plugins_url( 'assets/scripts.js', __FILE__ ), array( 'jquery' ), $ver, false );
+	wp_enqueue_script( 'tfw-scripts', plugins_url( 'assets/scripts' . $suffix . '.js', __FILE__ ), array( 'jquery' ), $ver, false );
 	wp_localize_script( 'tfw-scripts', 'tfw', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 	// Load  plugin CSS
