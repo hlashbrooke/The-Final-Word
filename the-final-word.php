@@ -175,8 +175,11 @@ add_action( 'wp_ajax_top-comment-remove', 'tfw_remove_top_comment' );
  * @return array               The updated list of comment classes
  */
 function tfw_comment_class ( $classes, $class, $comment_id, $comment, $post_id ) {
+
+	// Check if this comment is the top comment
 	$top_comment = get_comment_meta( $comment_id, 'top_comment', true );
 
+	// Add 'top-comment' class to commment class array
 	if( $top_comment && 'top' == $top_comment ) {
 		$classes[] = 'top-comment';
 	}
@@ -193,16 +196,30 @@ add_filter( 'comment_class', 'tfw_comment_class', 10, 5 );
  */
 function tfw_o2_post_fragment ( $fragment, $post_id ) {
 
+	// Get the comment ID of the top comment for the post
 	$post_top_comment = intval( get_post_meta( $post_id, 'post_top_comment', true ) );
+
+	// If we have a valid commment ID, then continue
 	if( $post_top_comment ) {
+
+		// Get the top comment object
 		$top_comment = get_comment( $post_top_comment );
+
+		// Modify the top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
 		$top_comment->comment_ID = 'display-top';
+
+		// Set the date to 1 Jjanuary 1970 to ensure that top comment display at the opt of the list
 		$top_comment->comment_date = '1970-01-01 00:00:00';
 		$top_comment->comment_date_gmt = '1970-01-01 00:00:00';
+
+		// Get the comment fragment for the top comment
 		$comment_fragment = o2_Fragment::get_fragment( $top_comment );
+
+		// Add the top comment fragment to the top of the comment thread
 		array_unshift( $fragment['comments'], $comment_fragment );
 	}
 
+	// Return the post fragment
 	return $fragment;
 }
 add_filter( 'o2_post_fragment', 'tfw_o2_post_fragment', 100, 2 );
@@ -215,16 +232,23 @@ add_filter( 'o2_post_fragment', 'tfw_o2_post_fragment', 100, 2 );
  */
 function tfw_o2_comment_fragment( $fragment, $comment_id ) {
 
+	// Check if this is the top comment set to display at the top of the thread
 	if( 'display-top' == $comment_id ) {
+
+		// Add the 'top-comment' class to the comment container
 		$fragment['cssClasses'] .= ' top-comment';
 
+		// Get the ID of the posts' top comment
 		$top_comment_id = intval( get_post_meta( $fragment['postID'], 'post_top_comment', true ) );
-		$permalink = '#comment-' . $top_comment_id;
 
-		$comment_label = '<p class="top-comment-label">' . __( 'Top comment', 'the-final-word' ) . '<br/><a href="' . $permalink . '" data-comment_anchor="comment-' . $top_comment_id . '">' . __( 'View in context', 'the-final-word' ) . '</a></p>';
+		// Add the 'Top comment' label with a 'View in context' link
+		$comment_label = '<p class="top-comment-label">' . __( 'Top comment', 'the-final-word' ) . '<br/><a href="#comment-' . $top_comment_id . '" data-comment_anchor="comment-' . $top_comment_id . '">' . __( 'View in context', 'the-final-word' ) . '</a></p>';
+
+		// Update the comment content to include the label
 		$fragment['contentFiltered'] .= $comment_label;
 	}
 
+	// Return the comment fragment
 	return $fragment;
 }
 add_filter( 'o2_comment_fragment', 'tfw_o2_comment_fragment', 10, 2 );
