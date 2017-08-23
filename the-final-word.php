@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: The Final Word
- * Version: 1.0
+ * Version: 1.0.1
  * Plugin URI: https://github.com/hlashbrooke/The-Final-Word
  * Description: Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
  * Author: Hugh Lashbrooke
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function tfw_enqueue_scripts () {
 
 	//  Set version number for JS and CSS
-	$ver = '1.0';
+	$ver = '1.0.1';
 
 	// Set minified suffix as necessary
 	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
@@ -51,18 +51,18 @@ add_action( 'wp_enqueue_scripts', 'tfw_enqueue_scripts' );
 function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 
 	// Only add the actions if the user is logged in
-	if( ! is_user_logged_in() ) {
+	if ( ! is_user_logged_in() ) {
 		return $actions;
 	}
 
 	// Get the post ID for the current comment
 	$post_id = $comment->comment_post_ID;
-	if( ! $post_id ) {
+	if ( ! $post_id ) {
 		return $actions;
 	}
 
 	// Only add the actions if the current user can edit the post
-	if( ! current_user_can( 'edit_post', $post_id ) ) {
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
 		return $actions;
 	}
 
@@ -76,10 +76,20 @@ function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 		$top_comment = get_comment_meta( $comment->comment_ID, 'top_comment', true );
 
 		// Display top comment add/remove actions depending on context
-		if( $top_comment && 'top' == $top_comment ) {
-			$actions[] = "<a class='o2-comment-top-remove o2-actions-border-top o2-warning-hover genericon genericon-close' data-comment_id='" . $comment->comment_ID . "'' href='#'>" . esc_html__( 'Top comment', 'the-final-word' ) . "</a>";
+		if ( $top_comment && 'top' == $top_comment ) {
+
+			// Generate nonce for ajax request
+			$nonce = wp_create_nonce( 'remove_top_comment_' . $comment->comment_ID );
+
+			// Add action to dropdown
+			$actions[] = "<a class='o2-comment-top-remove o2-actions-border-top o2-warning-hover genericon genericon-close' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . esc_html__( 'Top comment', 'the-final-word' ) . "</a>";
 		} else {
-			$actions[] = "<a class='o2-comment-top o2-actions-border-top genericon genericon-checkmark' data-comment_id='" . $comment->comment_ID . "'' href='#'>" . esc_html__( 'Top comment', 'the-final-word' ) . "</a>";
+
+			// Generate nonce for ajax request
+			$nonce = wp_create_nonce( 'add_top_comment_' . $comment->comment_ID );
+
+			// Add action to dropdown
+			$actions[] = "<a class='o2-comment-top o2-actions-border-top genericon genericon-checkmark' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . esc_html__( 'Top comment', 'the-final-word' ) . "</a>";
 		}
 	}
 
@@ -94,19 +104,22 @@ add_filter( 'o2_comment_actions', 'tfw_comment_actions', 11, 4 );
  */
 function tfw_mark_top_comment () {
 
-	// Check if a comment ID has been passed through the request
-	if( ! isset( $_POST['comment_id'] ) || ! $_POST['comment_id'] ) {
-		exit;
-	}
-
-	//  Set default return value
+	// Set default return value
 	$return = 0;
+
+	// Check if a comment ID has been passed through the request
+	if ( empty( $_POST['comment_id'] ) ) {
+		wp_die( $return );
+	}
 
 	// Make sure we have a valid integer here
 	$comment_id = intval( $_POST['comment_id'] );
 
+	// Check the nonce before continuing
+	check_ajax_referer( 'add_top_comment_' . $comment_id, 'nonce_data', true );
+
 	// If ID is non-zero, then proceed
-	if( $comment_id ) {
+	if ( $comment_id ) {
 
 		// Get comment object
 		$comment = get_comment( $comment_id );
@@ -114,9 +127,14 @@ function tfw_mark_top_comment () {
 		// Get post ID for comment
 		$post_id = $comment->comment_post_ID;
 
+		// Check if current user has permissions to edit this post
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( $return );
+		}
+
 		// Remove existing top comment(s) before adding a new one - posts should only have one top comment
 		$post_comments = get_comments( array( 'fields' => 'ids', 'post_id' => $post_id, 'meta_key' => 'top_comment' ) );
-		if( 0 < count( $post_comments ) ) {
+		if ( 0 < count( $post_comments ) ) {
 			foreach( $post_comments as $post_comment ) {
 				delete_comment_meta( $post_comment, 'top_comment' );
 			}
@@ -131,9 +149,7 @@ function tfw_mark_top_comment () {
 	}
 
 	// Echo return value as this is an ajax request
-	echo $return;
-
-	exit;
+	wp_die( $return );
 }
 add_action( 'wp_ajax_top-comment', 'tfw_mark_top_comment' );
 
@@ -143,25 +159,33 @@ add_action( 'wp_ajax_top-comment', 'tfw_mark_top_comment' );
  */
 function tfw_remove_top_comment () {
 
-	// Check if a comment ID has been passed through the request
-	if( ! isset( $_POST['comment_id'] ) || ! $_POST['comment_id'] ) {
-		exit;
-	}
-
-	//  Set default return value
+	// Set default return value
 	$return = 0;
+
+	// Check if a comment ID has been passed through the request
+	if ( ! isset( $_POST['comment_id'] ) || ! $_POST['comment_id'] ) {
+		wp_die( $return );
+	}
 
 	// Make sure we have a valid integer here
 	$comment_id = intval( $_POST['comment_id'] );
 
+	// Check the nonce before continuing
+	check_ajax_referer( 'remove_top_comment_' . $comment_id, 'nonce_data', true );
+
 	// If ID is non-zero, then proceed
-	if( $comment_id ) {
+	if ( $comment_id ) {
 
 		// Get comment object
 		$comment = get_comment( $comment_id );
 
 		// Get post ID for comment
 		$post_id = $comment->comment_post_ID;
+
+		// Check if current user has permissions to edit this post
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_die( $return );
+		}
 
 		// Delete meta for top comment and post
 		delete_comment_meta( $comment_id, 'top_comment' );
@@ -172,9 +196,7 @@ function tfw_remove_top_comment () {
 	}
 
 	// Echo return value as this is an ajax request
-	echo $return;
-
-	exit;
+	wp_die( $return );
 }
 add_action( 'wp_ajax_top-comment-remove', 'tfw_remove_top_comment' );
 
@@ -193,7 +215,7 @@ function tfw_comment_class ( $classes, $class, $comment_id, $comment, $post_id )
 	$top_comment = get_comment_meta( $comment_id, 'top_comment', true );
 
 	// Add 'top-comment' class to commment class array
-	if( $top_comment && 'top' == $top_comment ) {
+	if ( $top_comment && 'top' == $top_comment ) {
 		$classes[] = 'top-comment';
 	}
 
@@ -213,7 +235,7 @@ function tfw_o2_post_fragment ( $fragment, $post_id ) {
 	$post_top_comment = intval( get_post_meta( $post_id, 'post_top_comment', true ) );
 
 	// If we have a valid commment ID, then continue
-	if( $post_top_comment ) {
+	if ( $post_top_comment ) {
 
 		// Get the top comment object
 		$top_comment = get_comment( $post_top_comment );
@@ -228,7 +250,7 @@ function tfw_o2_post_fragment ( $fragment, $post_id ) {
 		$top_comment->comment_date = '1970-01-01 00:00:00';
 		$top_comment->comment_date_gmt = '1970-01-01 00:00:00';
 
-		// Get the comment fragment for the top comment suing the modified data
+		// Get the comment fragment for the top comment using the modified data
 		$comment_fragment = o2_Fragment::get_fragment( $top_comment );
 
 		// Add the top comment fragment to the top of the comment thread
@@ -249,7 +271,7 @@ add_filter( 'o2_post_fragment', 'tfw_o2_post_fragment', 100, 2 );
 function tfw_o2_comment_fragment( $fragment, $comment_id ) {
 
 	// Check if this is the top comment set to display at the top of the thread
-	if( 'display-top' == $comment_id ) {
+	if ( 'display-top' == $comment_id ) {
 
 		// Add the 'top-comment' class to the comment container
 		$fragment['cssClasses'] .= ' top-comment';

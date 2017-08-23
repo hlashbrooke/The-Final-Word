@@ -7,10 +7,14 @@ jQuery( document ).ready( function( $ ) {
 		// Get the commment ID
 		var comment_id = $( this ).data( 'comment_id' );
 
+		// Get the action nonce
+		var nonce = $( this ).data( 'nonce' );
+
 		//  Set the data for the ajax request
 		var data = {
 			'action': 'top-comment',
-			'comment_id': comment_id
+			'comment_id': comment_id,
+			'nonce_data': nonce
 		};
 
 		// Post ajax request for setting top comment
@@ -41,10 +45,14 @@ jQuery( document ).ready( function( $ ) {
 		// Get the commment ID
 		var comment_id = $( this ).data( 'comment_id' );
 
+		// Get the action nonce
+		var nonce = $( this ).data( 'nonce' );
+
 		//  Set the data for the ajax request
 		var data = {
 			'action': 'top-comment-remove',
-			'comment_id': comment_id
+			'comment_id': comment_id,
+			'nonce_data': nonce
 		};
 		// Post ajax request for setting top comment
 		$.post( tfw.ajaxurl, data, function( response ) {

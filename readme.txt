@@ -3,7 +3,7 @@ Contributors: hlashbrooke
 Tags: comments, comment moderation, discussion
 Requires at least: 4.7
 Tested up to: 4.8.1
-Stable tag: 1.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 
 Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
@@ -42,12 +42,16 @@ No. In the future it might be updated to  work with other themes, but O2 has suc
 
 == Changelog ==
 
+= 1.0.1 =
+* 2017-08-23
+* Adding nonce and permissions checks to ajax requests
+* Improving code styling
+
 = 1.0 =
 * 2017-08-23
 * Initial release
 
 == Upgrade Notice ==
 
-= 1.0 =
-* 2017-08-23
-* Initial release
+= 1.0.1 =
+* Adding security with nonce and permission checks
