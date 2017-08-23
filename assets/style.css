@@ -1,11 +1,11 @@
 .top-comment {
 	border: 2px solid #008000 !important;
 }
-
 .comment-display-top {
 	background: rgba(0, 128, 0, 0.1) !important;
 }
-.comment-display-top .comment-date {
+.comment-display-top .comment-date,
+.comment-display-top .o2-comment-actions {
 	display: none;
 }
 .comment-display-top {
