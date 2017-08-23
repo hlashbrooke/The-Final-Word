@@ -6,7 +6,7 @@
  * Description: Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
  * Author: Hugh Lashbrooke
  * Author URI: https://hugh.blog/
- * Requires at least: 4.8
+ * Requires at least: 4.7
  * Tested up to: 4.8.1
  *
  * Text Domain: the-final-word
@@ -50,9 +50,19 @@ add_action( 'wp_enqueue_scripts', 'tfw_enqueue_scripts' );
  */
 function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 
+	// Only add the actions if the user is logged in
+	if( ! is_user_logged_in() ) {
+		return $actions;
+	}
+
 	// Get the post ID for the current comment
 	$post_id = $comment->comment_post_ID;
 	if( ! $post_id ) {
+		return $actions;
+	}
+
+	// Only add the actions if the current user can edit the post
+	if( ! current_user_can( 'edit_post', $post_id ) ) {
 		return $actions;
 	}
 

@@ -1,7 +1,7 @@
 === The Final Word ===
 Contributors: hlashbrooke
 Tags: comments, comment moderation, discussion
-Requires at least: 4.8
+Requires at least: 4.7
 Tested up to: 4.8.1
 Stable tag: 1.0
 License: GPLv2 or later
@@ -17,10 +17,12 @@ This plugin allows you to mark a selected comment as the one that effectively su
 Functionality includes:
 
 * Marking a chosen comment as the 'top comment'
-* The top comment is displayed at the top of the comment list with a 'view in context' link
+* The top comment is displayed at the top of the comment list with a 'view in context' anchor link
 * The top comment is also highlighted in context in the thread
 * Only one comment can be selected as the top comment
 * The top comment flag can be removed
+* Only users who are able to edit the post can select a top comment
+* Includes basic styling for top comments
 
 [Contribute on GitHub](https://github.com/hlashbrooke/The-Final-Word).
 
@@ -41,11 +43,11 @@ No.
 == Changelog ==
 
 = 1.0 =
-* 2017-08-24
+* 2017-08-23
 * Initial release
 
 == Upgrade Notice ==
 
 = 1.0 =
-* 2017-08-24
+* 2017-08-23
 * Initial release

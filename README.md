@@ -5,10 +5,12 @@ Have the final word in a comment thread by marking a chosen comment as the 'top 
 ## Functionality includes
 
 * Marking a chosen comment as the 'top comment'
-* The top comment is displayed at the top of the comment list with a 'view in context' link
+* The top comment is displayed at the top of the comment list with a 'view in context' anchor link
 * The top comment is also highlighted in context in the thread
 * Only one comment can be selected as the top comment
 * The top comment flag can be removed
+* Only users who are able to edit the post can select a top comment
+* Includes basic styling for top comments
 
 ## Future functionality
 
