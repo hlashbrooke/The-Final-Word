@@ -1,8 +1,8 @@
-.top-comment {
-	border: 2px solid #008000 !important;
+.o2-post-comments .top-comment {
+	border: 2px solid #008000;
 }
-.comment-display-top {
-	background: rgba(0, 128, 0, 0.1) !important;
+.post .o2-post-comments .top-comment.comment-display-top {
+	background: rgba(0, 128, 0, 0.1);
 }
 .comment-display-top .comment-date,
 .comment-display-top .o2-comment-actions {
