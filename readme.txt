@@ -38,7 +38,7 @@ Installing "The Final Word" can be done either by searching for "The Final Word"
 
 = Will this work without O2? =
 
-No.
+No. In the future it might be updated to  work with other themes, but O2 has such a specific way of handling comments that this won't work elsewhere just yet.
 
 == Changelog ==
 
