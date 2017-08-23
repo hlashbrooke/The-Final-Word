@@ -221,11 +221,14 @@ function tfw_o2_post_fragment ( $fragment, $post_id ) {
 		// Modify the top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
 		$top_comment->comment_ID = 'display-top';
 
-		// Set the date to 1 Jjanuary 1970 to ensure that top comment display at the opt of the list
+		// Top comment won't display correctly for child comments, so ensuring it has no parent in this instance
+		$top_comment->comment_parent = 0;
+
+		// Set the date to 1 January 1970 to ensure that top comment displays at the opt of the list
 		$top_comment->comment_date = '1970-01-01 00:00:00';
 		$top_comment->comment_date_gmt = '1970-01-01 00:00:00';
 
-		// Get the comment fragment for the top comment
+		// Get the comment fragment for the top comment suing the modified data
 		$comment_fragment = o2_Fragment::get_fragment( $top_comment );
 
 		// Add the top comment fragment to the top of the comment thread

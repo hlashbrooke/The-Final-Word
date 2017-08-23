@@ -23,10 +23,10 @@ jQuery( document ).ready( function( $ ) {
 				var comment_container = '#comment-' + response;
 
 				// Remove currently displayed top comment
-				$( comment_container ).parent( '.o2-post-comments' ).find( '.comment-display-top' ).remove();
+				$( comment_container ).closest( '.o2-post-comments' ).find( '.comment-display-top' ).remove();
 
 				// Remove 'top-comment' class from existing comments if necessary
-				$( comment_container ).parent( '.o2-post-comments' ).find( '.comment' ).removeClass( 'top-comment' );
+				$( comment_container ).closest( '.o2-post-comments' ).find( '.comment' ).removeClass( 'top-comment' );
 
 				// Add the 'top-comment' class to chosen comment
 				$( comment_container ).addClass( 'top-comment' );
@@ -56,7 +56,7 @@ jQuery( document ).ready( function( $ ) {
 				var comment_container = '#comment-' + response;
 
 				// Remove currently displayed top comment
-				$( comment_container ).parent( '.o2-post-comments' ).find( '.comment-display-top' ).remove();
+				$( comment_container ).closest( '.o2-post-comments' ).find( '.comment-display-top' ).remove();
 
 				// Remove 'top-comment' class from top comment
 				$( comment_container ).removeClass( 'top-comment' );
@@ -76,7 +76,7 @@ jQuery( document ).ready( function( $ ) {
 
 		// Animate the scroll to the top comment
 		jQuery( 'html:not(:animated),body:not(:animated)' ).animate( { scrollTop: destination}, 800, function() {
-			// Update the page URL to include the comment anchor
+			// Update the URL in the address bar to include the comment anchor
 	        window.location.hash = target;
 	    });
 	});
