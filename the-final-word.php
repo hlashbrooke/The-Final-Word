@@ -224,7 +224,7 @@ function tfw_comment_class ( $classes, $class, $comment_id, $comment, $post_id )
 add_filter( 'comment_class', 'tfw_comment_class', 10, 5 );
 
 /**
- * Modify the O2 post fragment
+ * Modify the O2 post fragment - this duplicates the 'top comment' and adds it to the top of the comment thread
  * @param  array   $fragment The fragment data for the current post
  * @param  integer $post_id  The ID of the current post
  * @return array             The updated fragment data for the current post
@@ -234,30 +234,30 @@ function tfw_o2_post_fragment ( $fragment, $post_id ) {
 	// Get the comment ID of the top comment for the post
 	$post_top_comment = intval( get_post_meta( $post_id, 'post_top_comment', true ) );
 
-	// If we have a valid commment ID, then continue
+	// If we have a valid commment ID, then continue with duplicating it to the top of the thread
 	if ( $post_top_comment ) {
 
 		// Get the top comment object
 		$top_comment = get_comment( $post_top_comment );
 
-		// Modify the top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
+		// Modify the duplicated top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
 		$top_comment->comment_ID = 'display-top';
 
-		// Top comment won't display correctly for child comments, so ensuring it has no parent in this instance
+		// Duplicated top comment won't display correctly for child comments, so ensuring it has no parent in this instance
 		$top_comment->comment_parent = 0;
 
-		// Set the date to 1 January 1970 to ensure that top comment displays at the opt of the list
+		// Set the date to 1 January 1970 to ensure that the duplicated top comment displays at the top of the list
 		$top_comment->comment_date = '1970-01-01 00:00:00';
 		$top_comment->comment_date_gmt = '1970-01-01 00:00:00';
 
-		// Get the comment fragment for the top comment using the modified data
+		// Get the comment fragment for the duplicated top comment using the modified data
 		$comment_fragment = o2_Fragment::get_fragment( $top_comment );
 
-		// Add the top comment fragment to the top of the comment thread
+		// Add the duplicated top comment fragment to the top of the comment thread
 		array_unshift( $fragment['comments'], $comment_fragment );
 	}
 
-	// Return the post fragment
+	// Return the post fragment with the duplicated top comment added
 	return $fragment;
 }
 add_filter( 'o2_post_fragment', 'tfw_o2_post_fragment', 100, 2 );
