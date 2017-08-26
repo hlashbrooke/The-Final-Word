@@ -3,7 +3,7 @@ Contributors: hlashbrooke
 Tags: comments, comment moderation, discussion
 Requires at least: 4.7
 Tested up to: 4.8.1
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 
 Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
@@ -23,6 +23,7 @@ Functionality includes:
 * The top comment flag can be removed
 * Only users who are able to edit the post can select a top comment
 * Includes basic styling for top comments
+* 'Top comment' label can be translated and/or filtered
 
 [Contribute on GitHub](https://github.com/hlashbrooke/The-Final-Word).
 
@@ -42,6 +43,11 @@ No. In the future it might be updated to  work with other themes, but O2 has suc
 
 == Changelog ==
 
+= 1.0.2 =
+* 2017-08-26
+* Adding `top_comment_label` filter to top comment label display
+* Improving code styling
+
 = 1.0.1 =
 * 2017-08-23
 * Adding nonce and permissions checks to ajax requests
@@ -53,5 +59,5 @@ No. In the future it might be updated to  work with other themes, but O2 has suc
 
 == Upgrade Notice ==
 
-= 1.0.1 =
-* Adding security with nonce and permission checks
+= 1.0.2 =
+* Adding `top_comment_label` filter to top comment label display

@@ -11,6 +11,7 @@ Have the final word in a comment thread by marking a chosen comment as the 'top 
 * The top comment flag can be removed
 * Only users who are able to edit the post can select a top comment
 * Includes basic styling for top comments
+* 'Top comment' label can be translated and/or filtered
 
 ## Future functionality
 

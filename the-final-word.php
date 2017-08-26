@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: The Final Word
- * Version: 1.0.1
+ * Version: 1.0.2
  * Plugin URI: https://github.com/hlashbrooke/The-Final-Word
  * Description: Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
  * Author: Hugh Lashbrooke
