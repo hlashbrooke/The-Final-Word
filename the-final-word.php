@@ -75,6 +75,9 @@ function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 		// Check if this comment is already marked as the top comment
 		$top_comment = get_comment_meta( $comment->comment_ID, 'top_comment', true );
 
+		// Allow the top  comment label to be filtered
+		$top_comment_label = apply_filters( 'top_comment_label', __( 'Top comment', 'the-final-word' ) );
+
 		// Display top comment add/remove actions depending on context
 		if ( $top_comment && 'top' == $top_comment ) {
 
@@ -82,14 +85,14 @@ function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 			$nonce = wp_create_nonce( 'remove_top_comment_' . $comment->comment_ID );
 
 			// Add action to dropdown
-			$actions[] = "<a class='o2-comment-top-remove o2-actions-border-top o2-warning-hover genericon genericon-close' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . esc_html__( 'Top comment', 'the-final-word' ) . "</a>";
+			$actions[] = "<a class='o2-comment-top-remove o2-actions-border-top o2-warning-hover genericon genericon-close' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . $top_comment_label . "</a>";
 		} else {
 
 			// Generate nonce for ajax request
 			$nonce = wp_create_nonce( 'add_top_comment_' . $comment->comment_ID );
 
 			// Add action to dropdown
-			$actions[] = "<a class='o2-comment-top o2-actions-border-top genericon genericon-checkmark' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . esc_html__( 'Top comment', 'the-final-word' ) . "</a>";
+			$actions[] = "<a class='o2-comment-top o2-actions-border-top genericon genericon-checkmark' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . $top_comment_label . "</a>";
 		}
 	}
 
@@ -279,8 +282,11 @@ function tfw_o2_comment_fragment( $fragment, $comment_id ) {
 		// Get the ID of the posts' top comment
 		$top_comment_id = intval( get_post_meta( $fragment['postID'], 'post_top_comment', true ) );
 
+		// Allow the top  comment label to be filtered
+		$top_comment_label = apply_filters( 'top_comment_label', __( 'Top comment', 'the-final-word' ) );
+
 		// Add the 'Top comment' label with a 'View in context' link
-		$comment_label = '<p class="top-comment-label">' . __( 'Top comment', 'the-final-word' ) . '<br/><a href="#comment-' . $top_comment_id . '" data-comment_anchor="comment-' . $top_comment_id . '">' . __( 'View in context', 'the-final-word' ) . '</a></p>';
+		$comment_label = '<p class="top-comment-label">' . $top_comment_label . '<br/><a href="#comment-' . $top_comment_id . '" data-comment_anchor="comment-' . $top_comment_id . '">' . __( 'View in context', 'the-final-word' ) . '</a></p>';
 
 		// Update the comment content to include the label
 		$fragment['contentFiltered'] .= $comment_label;
