@@ -85,14 +85,14 @@ function tfw_comment_actions ( $actions, $location, $comment, $comment_depth ) {
 			$nonce = wp_create_nonce( 'remove_top_comment_' . $comment->comment_ID );
 
 			// Add action to dropdown
-			$actions[] = "<a class='o2-comment-top-remove o2-actions-border-top o2-warning-hover genericon genericon-close' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . $top_comment_label . "</a>";
+			$actions[] = "<a class='o2-comment-top-remove o2-comment-remove-top-answer o2-actions-border-top o2-warning-hover genericon genericon-close' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . $top_comment_label . "</a>";
 		} else {
 
 			// Generate nonce for ajax request
 			$nonce = wp_create_nonce( 'add_top_comment_' . $comment->comment_ID );
 
 			// Add action to dropdown
-			$actions[] = "<a class='o2-comment-top o2-actions-border-top genericon genericon-checkmark' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . $top_comment_label . "</a>";
+			$actions[] = "<a class='o2-comment-top o2-comment-add-top-answer o2-actions-border-top genericon genericon-checkmark' data-comment_id='" . esc_attr( $comment->comment_ID ) . "' data-nonce='" . esc_attr( $nonce ) . "' href='#'>" . $top_comment_label . "</a>";
 		}
 	}
 
