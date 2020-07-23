@@ -242,22 +242,26 @@ function tfw_o2_post_fragment ( $fragment, $post_id ) {
 
 		// Get the top comment object
 		$top_comment = get_comment( $post_top_comment );
+		
+		// Check if the top comment still exists before continuing
+		if( ! is_null( $top_comment ) ) {
 
-		// Modify the duplicated top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
-		$top_comment->comment_ID = 'display-top';
+			// Modify the duplicated top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
+			$top_comment->comment_ID = 'display-top';
 
-		// Duplicated top comment won't display correctly for child comments, so ensuring it has no parent in this instance
-		$top_comment->comment_parent = 0;
+			// Duplicated top comment won't display correctly for child comments, so ensuring it has no parent in this instance
+			$top_comment->comment_parent = 0;
 
-		// Set the date to 1 January 1970 to ensure that the duplicated top comment displays at the top of the list
-		$top_comment->comment_date = '1970-01-01 00:00:00';
-		$top_comment->comment_date_gmt = '1970-01-01 00:00:00';
+			// Set the date to 1 January 1970 to ensure that the duplicated top comment displays at the top of the list
+			$top_comment->comment_date = '1970-01-01 00:00:00';
+			$top_comment->comment_date_gmt = '1970-01-01 00:00:00';
 
-		// Get the comment fragment for the duplicated top comment using the modified data
-		$comment_fragment = o2_Fragment::get_fragment( $top_comment );
+			// Get the comment fragment for the duplicated top comment using the modified data
+			$comment_fragment = o2_Fragment::get_fragment( $top_comment );
 
-		// Add the duplicated top comment fragment to the top of the comment thread
-		array_unshift( $fragment['comments'], $comment_fragment );
+			// Add the duplicated top comment fragment to the top of the comment thread
+			array_unshift( $fragment['comments'], $comment_fragment );
+		}
 	}
 
 	// Return the post fragment with the duplicated top comment added
