@@ -3,7 +3,7 @@ Contributors: hlashbrooke
 Tags: comments, comment moderation, discussion, o2, p2
 Requires at least: 4.7
 Tested up to: 5.5
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 
 Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
@@ -42,6 +42,10 @@ Installing "The Final Word" can be done either by searching for "The Final Word"
 No. In the future it might be updated to  work with other themes, but O2 has such a specific way of handling comments that this won't work elsewhere just yet.
 
 == Changelog ==
+
+= 1.0.3 =
+* 2020-10-01
+* Preventing invalid comment ID errors (props @dd32)
 
 = 1.0.2 =
 * 2017-08-26
