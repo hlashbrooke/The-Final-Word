@@ -2,7 +2,7 @@
 Contributors: hlashbrooke
 Tags: comments, comment moderation, discussion, o2, p2
 Requires at least: 4.7
-Tested up to: 5.0
+Tested up to: 5.5
 Stable tag: 1.0.2
 License: GPLv2 or later
 
