@@ -242,22 +242,17 @@ function tfw_o2_post_fragment ( $fragment, $post_id ) {
 
 		// Get the top comment object
 		$top_comment = get_comment( $post_top_comment );
-		
+
 		// Check if the top comment still exists before continuing
-		if( ! is_null( $top_comment ) ) {
-
-			// Modify the duplicated top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
-			$top_comment->comment_ID = 'display-top';
-
-			// Duplicated top comment won't display correctly for child comments, so ensuring it has no parent in this instance
-			$top_comment->comment_parent = 0;
-
-			// Set the date to 1 January 1970 to ensure that the duplicated top comment displays at the top of the list
-			$top_comment->comment_date = '1970-01-01 00:00:00';
-			$top_comment->comment_date_gmt = '1970-01-01 00:00:00';
+		if ( ! is_null( $top_comment ) ) {
+			// Filter the Comment fragment to use some specific details.
+			add_filter( 'o2_comment_fragment', 'tfw_o2_comment_fragment', 100, 2 );
 
 			// Get the comment fragment for the duplicated top comment using the modified data
 			$comment_fragment = o2_Fragment::get_fragment( $top_comment );
+
+			// Remove our filter so as not to affect other comments.
+			remove_filter( 'o2_comment_fragment', 'tfw_o2_comment_fragment', 100, 2 );
 
 			// Add the duplicated top comment fragment to the top of the comment thread
 			array_unshift( $fragment['comments'], $comment_fragment );
@@ -276,27 +271,28 @@ add_filter( 'o2_post_fragment', 'tfw_o2_post_fragment', 100, 2 );
  * @return array                The updated fragment data for the current comment
  */
 function tfw_o2_comment_fragment( $fragment, $comment_id ) {
+	// Modify the duplicated top comment ID so that it will actually display (duplicate IDs are ignore when generating the thread)
+	$fragment['id'] = 'display-top';
 
-	// Check if this is the top comment set to display at the top of the thread
-	if ( 'display-top' == $comment_id ) {
+	// Set the date to 1970-01-01 00:00:00 to ensure it shows first
+	$fragment['commentCreated'] = 0;
+	$fragment['unixtime']       = 0;
 
-		// Add the 'top-comment' class to the comment container
-		$fragment['cssClasses'] .= ' top-comment';
+	// Duplicated top comment won't display correctly for child comments, so ensuring it has no parent in this instance
+	$fragment['parentID'] = 0;
 
-		// Get the ID of the posts' top comment
-		$top_comment_id = intval( get_post_meta( $fragment['postID'], 'post_top_comment', true ) );
+	// Add the 'comment-display-top' class to the comment container
+	$fragment['cssClasses'] .= ' comment-display-top';
 
-		// Allow the top  comment label to be filtered
-		$top_comment_label = apply_filters( 'top_comment_label', __( 'Top comment', 'the-final-word' ) );
+	// Allow the top  comment label to be filtered
+	$top_comment_label = apply_filters( 'top_comment_label', __( 'Top comment', 'the-final-word' ) );
 
-		// Add the 'Top comment' label with a 'View in context' link
-		$comment_label = '<p class="top-comment-label">' . $top_comment_label . '<br/><a href="#comment-' . $top_comment_id . '" data-comment_anchor="comment-' . $top_comment_id . '">' . __( 'View in context', 'the-final-word' ) . '</a></p>';
+	// Add the 'Top comment' label with a 'View in context' link
+	$comment_label = '<p class="top-comment-label">' . $top_comment_label . '<br/><a href="#comment-' . $comment_id . '" data-comment_anchor="comment-' . $comment_id . '">' . __( 'View in context', 'the-final-word' ) . '</a></p>';
 
-		// Update the comment content to include the label
-		$fragment['contentFiltered'] .= $comment_label;
-	}
+	// Update the comment content to include the label
+	$fragment['contentFiltered'] .= $comment_label;
 
 	// Return the comment fragment
 	return $fragment;
 }
-add_filter( 'o2_comment_fragment', 'tfw_o2_comment_fragment', 10, 2 );
