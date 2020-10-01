@@ -2,15 +2,14 @@
 /*
  * Plugin Name: The Final Word
  * Version: 1.0.2
- * Plugin URI: https://github.com/hlashbrooke/The-Final-Word
+ * Plugin URI: https://wordpress.org/plugins/the-final-word/
  * Description: Have the final word in a comment thread by marking a chosen comment as the 'top comment'.
  * Author: Hugh Lashbrooke
  * Author URI: https://hugh.blog/
  * Requires at least: 4.7
- * Tested up to: 4.8.1
+ * Tested up to: 5.0
  *
  * Text Domain: the-final-word
- * Domain Path: /languages/
  *
  * @package WordPress
  * @author Hugh Lashbrooke
@@ -35,7 +34,7 @@ function tfw_enqueue_scripts () {
 	wp_enqueue_script( 'tfw-scripts', plugins_url( 'assets/scripts' . $suffix . '.js', __FILE__ ), array( 'jquery' ), $ver, false );
 	wp_localize_script( 'tfw-scripts', 'tfw', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
-	// Load  plugin CSS
+	// Load plugin CSS
 	wp_enqueue_style( 'tfw-css', plugins_url( 'assets/style.css', __FILE__ ), false, $ver, 'all' );
 }
 add_action( 'wp_enqueue_scripts', 'tfw_enqueue_scripts' );
